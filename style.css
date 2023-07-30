@@ -118,3 +118,25 @@ body {
     font-weight: 500;
     border: 2px solid black;
 }
+
+.start_game_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 5rem;
+}
+
+.start_game_button button {
+    font-size: 2rem;
+    border-radius: 5px;
+    padding: 1.5rem;
+    cursor: pointer;
+}
+
+.start_game_button button:hover {
+    transform: scale(1.05);
+}
+
+.start_game_button button:active {
+    transform: scale(0.95);
+}
