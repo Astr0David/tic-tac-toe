@@ -7,7 +7,8 @@
     font-family: Ubuntu, sans-serif;
 }
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
@@ -32,45 +33,88 @@ body {
     flex-wrap: wrap;
 }
 
-.player_one_title, .player_two_title {
+.player_one {
+    border-right: 1px solid grey;
+}
+
+.player_two {
+    border-left: 1px solid grey;
+}
+
+.player_one_title,
+.player_two_title {
     text-align: center;
     font-size: 1.75rem;
 }
 
-.player_one_image, .player_two_image {
+.player_one_image,
+.player_two_image {
     width: 500px;
     height: 500px;
 }
 
-.player_one_image img, .player_two_image img {
+.player_one_image img,
+.player_two_image img {
     width: 100%;
     height: 100%;
 }
 
-.player_one_choice, .player_two_choice {
+.player_one_choice,
+.player_two_choice {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
 }
 
-.player_one_choice button, .player_two_choice button {
+.player_one_choice button {
     padding: 0.5rem 1rem;
     font-size: 1.5rem;
-    margin: 0px 10px;
+    margin: 0px 7px;
+    background-color: #E63B20;
+    border: 1px solid #E63B20;
+    border-radius: 5px;
+    color: white;
+    transition: all 0.1s ease;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.player_two_choice button {
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    margin: 0px 7px;
     background-color: #309DD3;
     border: 1px solid #309DD3;
     border-radius: 5px;
-    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
     color: white;
     transition: all 0.1s ease;
+    cursor: pointer;
+    font-weight: 400;
 }
 
-.player_one_choice button:hover, .player_two_choice button:hover {
+.player_one_choice button:hover {
+    background-color: #309DD3;
+    border: 1px solid #309DD3;
+}
+
+.player_two_choice button:hover {
     background-color: #E63B20;
     border: 1px solid #E63B20;
 }
 
+.player_one_choice button:active,
+.player_two_choice button:active {
+    transform: scale(0.95);
+}
+
 .game_container {
     display: none;
+}
+
+.player_one_choice button.active,
+.player_two_choice button.active {
+    color: black;
+    font-weight: 500;
+    border: 2px solid black;
 }
