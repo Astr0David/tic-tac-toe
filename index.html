@@ -11,13 +11,16 @@
 
 <body>
     <div class="start_container">
+        <div class="title_container">
+            <h1>TIC-TAC-TOE</h1>
+        </div>
         <div class="players_container">
             <div class="player_one">
                 <div class="player_one_title">
                     <h1>Player 1</h1>
                 </div>
                 <div class="player_one_image">
-                    <img src="player1.jpg" alt="Player One Avatar">
+                    <img src="player1.jpg" alt="Player One Avatar" id="player1pic">
                 </div>
                 <div class="player_one_choice">
                     <button class="active" id="player1human">Human</button>
@@ -29,10 +32,10 @@
                     <h1>Player 2</h1>
                 </div>
                 <div class="player_two_image">
-                    <img src="player2.jpg" alt="Player Two Avatar">
+                    <img src="player2.jpg" alt="Player Two Avatar" id="player2pic">
                 </div>
                 <div class="player_two_choice">
-                    <button class="active" id="payer2human">Human</button>
+                    <button class="active" id="player2human">Human</button>
                     <button id="player2bot">AI</button>
                 </div>
             </div>
@@ -40,8 +43,6 @@
         <div class="start_game_button">
             <button>Start Game</button>
         </div>
-
-
     </div>
     <div class="game_container">
 
