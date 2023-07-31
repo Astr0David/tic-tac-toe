@@ -1,52 +1,79 @@
-const playerOneHuman = document.getElementById("player1human");
-const playerOneAi = document.getElementById("player1bot");
-const playerOneImage = document.getElementById("player1pic");
-const playerTwoHuman = document.getElementById("player2human");
-const playerTwoAi = document.getElementById("player2bot");
-const playerTwoImage = document.getElementById("player2pic");
-const imageContainerOne = document.querySelector(".player_one_image");
-const imageContainerTwo = document.querySelector(".player_two_image");
+function initialisePlayers() {
+  const playerOneBtns = document.querySelectorAll('.player-one-btn');
+  const playerTwoBtns = document.querySelectorAll('.player-two-btn');
+  const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
 
-playerOneHuman.addEventListener("click", function () {
-  if (!playerOneHuman.classList.contains("active")) {
-    playerOneAi.classList.remove("active");
-    playerOneHuman.classList.toggle("active");
-    playerOneImage.style.display = "none";
-    playerOneImage.src = "player1.jpg";
-    imageContainerOne.style.padding = "0px";
-    playerOneImage.style.display = "block";
+  const playerImages = {
+    'player1': {
+      human: 'player1.jpg',
+      bot: 'botprofile1.png'
+    },
+    'player2': {
+      human: 'player2.jpg',
+      bot: 'botprofile2.png'
+    }
   }
-});
 
-playerOneAi.addEventListener("click", function () {
-  if (!playerOneAi.classList.contains("active")) {
-    playerOneHuman.classList.remove("active");
-    playerOneAi.classList.toggle("active");
-    playerOneImage.style.display = "none";
-    playerOneImage.src = "botprofile1.png";
-    imageContainerOne.style.padding = "50px";
-    playerOneImage.style.display = "block";
+  function toggleOneActiveClass(targetBtn) {
+    playerOneBtns.forEach((btn) => {
+      btn.classList.toggle('active', btn === targetBtn);
+    });
   }
-});
 
-playerTwoHuman.addEventListener("click", function () {
-  if (!playerTwoHuman.classList.contains("active")) {
-    playerTwoAi.classList.remove("active");
-    playerTwoHuman.classList.toggle("active");
-    playerTwoImage.style.display = "none";
-    playerTwoImage.src = "player2.jpg";
-    imageContainerTwo.style.padding = "0px";
-    playerTwoImage.style.display = "block";
+  function toggleTwoActiveClass(targetBtn) {
+    playerTwoBtns.forEach((btn) => {
+      btn.classList.toggle('active', btn === targetBtn);
+    });
   }
-});
 
-playerTwoAi.addEventListener("click", function () {
-  if (!playerTwoAi.classList.contains("active")) {
-    playerTwoHuman.classList.remove("active");
-    playerTwoAi.classList.toggle("active");
-    playerTwoImage.style.display = "none";
-    playerTwoImage.src = "botprofile2.png";
-    imageContainerTwo.style.padding = "50px";
-    playerTwoImage.style.display = "block";
+  function updateImage(playerNumber, playerType) {
+    const imageUrl = playerImages[`${playerNumber}`][playerType];
+
+    let imageContainer;
+
+    if (playerNumber === "player1") {
+      imageContainer = imageContainers[0];
+    } else {
+      imageContainer = imageContainers[1];
+    }
+
+    const playerImage = imageContainer.querySelector('img');
+
+    playerImage.src = imageUrl;
+    playerImage.style.display = 'initial';
   }
-});
+
+
+  function handleButtonClickOne(event) {
+    const clickedBtn = event.target;
+    if (!clickedBtn.classList.contains('active')) {
+      toggleOneActiveClass(clickedBtn);
+
+      const [playerNumber, playerType] = clickedBtn.id.split("-").filter(Boolean);
+
+      updateImage(playerNumber, playerType);
+    }
+  }
+
+  function handleButtonClickTwo(event) {
+    const clickedBtn = event.target;
+    if (!clickedBtn.classList.contains('active')) {
+      toggleTwoActiveClass(clickedBtn);
+
+      const [playerNumber, playerType] = clickedBtn.id.split("-").filter(Boolean);
+
+      updateImage(playerNumber, playerType);
+    }
+  }
+
+  document.addEventListener('click', function (event) {
+    const target = event.target;
+    if (target.classList.contains('player-one-btn')) {
+      handleButtonClickOne(event);
+    } else if (target.classList.contains('player-two-btn')) {
+      handleButtonClickTwo(event);
+    }
+  });
+}
+
+initialisePlayers()

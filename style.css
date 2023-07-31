@@ -58,13 +58,15 @@ body {
 .player_two_image {
     width: 500px;
     height: 500px;
+    padding: 3rem;
 }
 
 .player_one_image img,
 .player_two_image img {
     width: 100%;
     height: 100%;
-    transition: 0.1s ease;
+    transition: all 0.2s ease;
+    display: none;
 }
 
 .player_one_choice,
@@ -101,14 +103,9 @@ body {
     font-weight: 400;
 }
 
+.player_two_choice button:hover,
 .player_one_choice button:hover {
-    background-color: #309DD3;
-    border: 1px solid #309DD3;
-}
-
-.player_two_choice button:hover {
-    background-color: #E63B20;
-    border: 1px solid #E63B20;
+    border: 3px solid black;
 }
 
 .player_one_choice button:active,
@@ -122,9 +119,8 @@ body {
 
 .player_one_choice button.active,
 .player_two_choice button.active {
-    color: black;
     font-weight: 500;
-    border: 2px solid black;
+    border: 3px solid black;
 }
 
 .start_game_button {
