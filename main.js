@@ -12,56 +12,29 @@ function initialisePlayers() {
       human: 'player2.jpg',
       bot: 'botprofile2.png'
     }
-  }
+  };
 
-  function toggleOneActiveClass(targetBtn) {
-    playerOneBtns.forEach((btn) => {
-      btn.classList.toggle('active', btn === targetBtn);
-    });
-  }
-
-  function toggleTwoActiveClass(targetBtn) {
-    playerTwoBtns.forEach((btn) => {
+  function toggleActiveClass(playerBtns, targetBtn) {
+    playerBtns.forEach((btn) => {
       btn.classList.toggle('active', btn === targetBtn);
     });
   }
 
   function updateImage(playerNumber, playerType) {
-    const imageUrl = playerImages[`${playerNumber}`][playerType];
-
-    let imageContainer;
-
-    if (playerNumber === "player1") {
-      imageContainer = imageContainers[0];
-    } else {
-      imageContainer = imageContainers[1];
-    }
-
-    const playerImage = imageContainer.querySelector('img');
+    const imageUrl = playerImages[playerNumber][playerType];
+    const imageContainer = playerNumber === "player1" ? 0 : 1;
+    const playerImage = imageContainers[imageContainer].querySelector('img');
 
     playerImage.src = imageUrl;
     playerImage.style.display = 'initial';
   }
 
-
-  function handleButtonClickOne(event) {
+  function handleButtonClick(event, playerBtns) {
     const clickedBtn = event.target;
     if (!clickedBtn.classList.contains('active')) {
-      toggleOneActiveClass(clickedBtn);
+      toggleActiveClass(playerBtns, clickedBtn);
 
       const [playerNumber, playerType] = clickedBtn.id.split("-").filter(Boolean);
-
-      updateImage(playerNumber, playerType);
-    }
-  }
-
-  function handleButtonClickTwo(event) {
-    const clickedBtn = event.target;
-    if (!clickedBtn.classList.contains('active')) {
-      toggleTwoActiveClass(clickedBtn);
-
-      const [playerNumber, playerType] = clickedBtn.id.split("-").filter(Boolean);
-
       updateImage(playerNumber, playerType);
     }
   }
@@ -69,11 +42,11 @@ function initialisePlayers() {
   document.addEventListener('click', function (event) {
     const target = event.target;
     if (target.classList.contains('player-one-btn')) {
-      handleButtonClickOne(event);
+      handleButtonClick(event, playerOneBtns);
     } else if (target.classList.contains('player-two-btn')) {
-      handleButtonClickTwo(event);
+      handleButtonClick(event, playerTwoBtns);
     }
   });
 }
 
-initialisePlayers()
+initialisePlayers();
