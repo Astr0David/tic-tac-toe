@@ -4,6 +4,7 @@ function initialisePlayers() {
   const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
   const skillDropdownOne = document.getElementById('aiskillchoiceone')
   const skillDropdownTwo = document.getElementById('aiskillchoicetwo')
+  const startBtn = document.getElementById("start-game");
 
   const playerImages = {
     'player1': {
@@ -20,6 +21,17 @@ function initialisePlayers() {
     "player1": skillDropdownOne,
     "player2": skillDropdownTwo,
   };
+
+  let playerOneType = null;
+  let playerTwoType = null;
+
+  function checkStartButton() {
+    if (playerOneType && playerTwoType) {
+      startBtn.style.display = "block";
+    } else {
+      startBtn.style.display = "none";
+    }
+  }
 
   function toggleActiveClass(playerBtns, targetBtn) {
     playerBtns.forEach((btn) => {
@@ -47,8 +59,16 @@ function initialisePlayers() {
       toggleActiveClass(playerBtns, clickedBtn);
 
       const [playerNumber, playerType] = clickedBtn.id.split("-").filter(Boolean);
+
+      if (playerNumber === "player1") {
+        playerOneType = playerType;
+      } else if (playerNumber === "player2") {
+        playerTwoType = playerType;
+      }
+
       updateImage(playerNumber, playerType);
       botDropdown(playerNumber, playerType);
+      checkStartButton();
     }
   }
 
@@ -73,7 +93,7 @@ function startGame() {
     gameContainer.style.display = "flex";
   }
 
-  document.addEventListener("click", function(event) {
+  document.addEventListener("click", function (event) {
     const target = event.target;
     if (target.id === "start-game") {
       displayGame()

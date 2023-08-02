@@ -21,7 +21,7 @@ body {
 
 .start_container {
     flex: 1;
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -141,6 +141,7 @@ body {
     border-radius: 5px;
     padding: 1.5rem;
     cursor: pointer;
+    display: none;
 }
 
 .start_game_button button:hover {
@@ -152,7 +153,7 @@ body {
 }
 
 .game_container {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
 }
