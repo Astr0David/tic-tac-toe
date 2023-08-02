@@ -19,9 +19,10 @@ body {
     align-items: center;
 }
 
-.start-container {
+.start_container {
     flex: 1;
-    display: flex;
+    display: none;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
@@ -105,10 +106,6 @@ body {
     transform: scale(0.95);
 }
 
-.game_container {
-    display: none;
-}
-
 .player_one_choice button.active,
 .player_two_choice button.active {
     font-weight: 500;
@@ -117,7 +114,7 @@ body {
 
 .ai_skill_choice_one,
 .ai_skill_choice_two {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding-top: 1.5rem;
@@ -131,13 +128,6 @@ body {
     padding: 0.5rem;
     font-size: 1rem;
 }
-
-
-
-
-
-
-
 
 .start_game_button {
     display: flex;
@@ -159,4 +149,23 @@ body {
 
 .start_game_button button:active {
     transform: scale(0.95);
+}
+
+.game_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tic-tac-container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 200px));
+    grid-template-rows: repeat(3, minmax(0, 200px));
+    gap: 1rem;
+}
+
+.tic-tac-tile {
+    background-color: rgb(199, 198, 198);
+    border-radius: 8px;
+    cursor: pointer;
 }
