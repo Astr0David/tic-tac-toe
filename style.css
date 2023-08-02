@@ -170,3 +170,11 @@ body {
     border-radius: 8px;
     cursor: pointer;
 }
+
+.tic-tac-tile:hover {
+    box-shadow: 0px 0px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+.tic-tac-tile:active {
+    transform: scale(0.98);
+}
