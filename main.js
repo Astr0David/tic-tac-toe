@@ -22,15 +22,13 @@ function initialisePlayers() {
     "player2": skillDropdownTwo,
   };
 
-  let playerOneType = null;
-  let playerTwoType = null;
+  let playerTypes = {
+    "player1": null,
+    "player2": null,
+  };
 
   function checkStartButton() {
-    if (playerOneType && playerTwoType) {
-      startBtn.style.display = "block";
-    } else {
-      startBtn.style.display = "none";
-    }
+    startBtn.style.display = Object.values(playerTypes).every((type) => type !== null) ? "block" : "none";
   }
 
   function toggleActiveClass(playerBtns, targetBtn) {
@@ -60,11 +58,7 @@ function initialisePlayers() {
 
       const [playerNumber, playerType] = clickedBtn.id.split("-").filter(Boolean);
 
-      if (playerNumber === "player1") {
-        playerOneType = playerType;
-      } else if (playerNumber === "player2") {
-        playerTwoType = playerType;
-      }
+      playerTypes[playerNumber] = playerType;
 
       updateImage(playerNumber, playerType);
       botDropdown(playerNumber, playerType);
@@ -82,8 +76,6 @@ function initialisePlayers() {
   });
 }
 
-initialisePlayers();
-
 function startGame() {
   const gameContainer = document.querySelector(".game_container");
   const startContainer = document.querySelector(".start_container");
@@ -100,5 +92,9 @@ function startGame() {
     }
   });
 }
+
+
+
+initialisePlayers();
 
 startGame()
