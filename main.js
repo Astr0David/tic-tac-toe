@@ -93,8 +93,83 @@ function startGame() {
   });
 }
 
+function mainGame() {
+  const tiles = document.querySelectorAll(".tic-tac-tile");
+  const text = document.querySelector(".who-turn-container");
+
+  const positions = new Array(9).fill(undefined);
+
+  let gameEnded = false;
+
+  let count = 1;
+
+  updateTurnText();
+
+  function takeTurn(index) {
+    if (!gameEnded && !positions[index]) {
+      const symbol = count % 2 === 0 ? "O" : "X";
+      tiles[index].innerHTML = symbol;
+      positions[index] = symbol.toLowerCase();
+      count++;
+
+      setTimeout(() => {
+        if (!checkWinner()) {
+          checkDraw();
+        }
+      }, 0);
+
+      updateTurnText();
+    }
+  }
+
+  function handleClick(index) {
+    takeTurn(index);
+  }
+
+  tiles.forEach((tile, index) => tile.addEventListener("click", () => handleClick(index)));
+
+  function whichWinner(value) {
+    text.innerHTML = `Player ${value.toUpperCase()} Wins!`;
+    tiles.forEach((tile, index) => tile.removeEventListener("click", handleClick));
+    gameEnded = true;
+  }
+
+  function checkWinner() {
+    const winPatterns = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    for (const pattern of winPatterns) {
+      const [a, b, c] = pattern;
+      if (positions[a] === positions[b] && positions[b] === positions[c]) {
+        whichWinner(positions[a]);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
+  function checkDraw() {
+    if (positions.every(pos => pos)) {
+      text.innerHTML = "It is a Tie."
+      tiles.forEach((tile, index) => tile.removeEventListener("click", handleClick));
+      gameEnded = true;
+    }
+  }
+
+  function updateTurnText() {
+    const currentPlayer = count % 2 === 0 ? "Player 2" : "Player 1";
+    text.innerHTML = `${currentPlayer} has their turn.`;
+  }
+}
 
 
 initialisePlayers();
 
-startGame()
+startGame();
+
+mainGame();

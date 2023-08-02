@@ -21,7 +21,7 @@ body {
 
 .start_container {
     flex: 1;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -153,9 +153,17 @@ body {
 }
 
 .game_container {
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+}
+
+.who-turn-container {
+    color: red;
+    font-size: 1.75rem;
+    padding-bottom: 2rem;
+    user-select: none;
 }
 
 .tic-tac-container {
@@ -169,6 +177,12 @@ body {
     background-color: rgb(199, 198, 198);
     border-radius: 8px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    font-family: Poppins, sans-serif;
+    user-select: none;
 }
 
 .tic-tac-tile:hover {
