@@ -40,14 +40,6 @@ body {
     flex-wrap: wrap;
 }
 
-.player_one {
-    border-right: 1px solid grey;
-}
-
-.player_two {
-    border-left: 1px solid grey;
-}
-
 .player_one_title,
 .player_two_title {
     text-align: center;
@@ -105,7 +97,7 @@ body {
 
 .player_two_choice button:hover,
 .player_one_choice button:hover {
-    border: 3px solid black;
+    border: 2px solid black;
 }
 
 .player_one_choice button:active,
@@ -122,6 +114,30 @@ body {
     font-weight: 500;
     border: 3px solid black;
 }
+
+.ai_skill_choice_one,
+.ai_skill_choice_two {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1.5rem;
+}
+
+.ai_skill_choice_one select,
+.ai_skill_choice_two select {
+    width: 50%;
+    border-radius: 5px;
+    text-transform: capitalize;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+
+
+
+
+
+
 
 .start_game_button {
     display: flex;
