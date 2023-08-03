@@ -2,8 +2,6 @@ const initialisePlayers = (() => {
   const playerOneBtns = document.querySelectorAll('.player-one-btn');
   const playerTwoBtns = document.querySelectorAll('.player-two-btn');
   const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
-  const skillDropdownOne = document.getElementById('aiskillchoiceone')
-  const skillDropdownTwo = document.getElementById('aiskillchoicetwo')
   const startBtn = document.getElementById("start-game");
 
   const playerImages = {
@@ -15,11 +13,6 @@ const initialisePlayers = (() => {
       human: 'player2.jpg',
       bot: 'botprofile2.png'
     }
-  };
-
-  const playerElements = {
-    "player1": skillDropdownOne,
-    "player2": skillDropdownTwo,
   };
 
   const playerTypes = {
@@ -35,11 +28,6 @@ const initialisePlayers = (() => {
     playerBtns.forEach((btn) => {
       btn.classList.toggle('active', btn === targetBtn);
     });
-  };
-
-  const botDropdown = (playerNumber, playerType) => {
-    const targetElement = playerElements[playerNumber];
-    targetElement.style.display = playerType === "bot" ? "flex" : "none";
   };
 
   const updateImage = (playerNumber, playerType) => {
@@ -61,7 +49,6 @@ const initialisePlayers = (() => {
       playerTypes[playerNumber] = playerType;
 
       updateImage(playerNumber, playerType);
-      botDropdown(playerNumber, playerType);
       checkStartButton();
     }
   };
@@ -95,18 +82,20 @@ const startGame = (() => {
 })();
 
 const gameBoard = (() => {
-  const board = ["", "", "", "", "", "", "", "", ""]
-
-  const getBoard = () => board;
+  let board = ['', '', '', '', '', '', '', '', ''];
+  let availableMoves = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  let isGameOver = false;
 
   const makeMove = (index, marker) => {
-    if (board[index] === "") {
+    if (!isGameOver && board[index] === '') {
       board[index] = marker;
+      availableMoves = availableMoves.filter((move) => move !== index);
       return true;
-    } else {
-      return false;
     }
+    return false;
   };
+
+  const getBoard = () => board;
 
   const checkWin = (marker) => {
     const winPatterns = [
@@ -134,21 +123,28 @@ const gameBoard = (() => {
     }
   };
 
+  const getAvailableMoves = () => {
+    return availableMoves;
+  };
+
   const resetBoard = () => {
-    board.fill("");
+    board = ['', '', '', '', '', '', '', '', ''];
+    availableMoves = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    isGameOver = false;
   };
 
   return {
-    getBoard,
     makeMove,
+    getBoard,
+    resetBoard,
     checkWin,
     checkTie,
-    resetBoard,
+    getAvailableMoves,
   };
 })();
 
-const playerFactory = (name, marker) => {
-  return { name, marker };
+const playerFactory = (name, marker, isAI) => {
+  return { name, marker, isAI };
 };
 
 const displayController = (() => {
@@ -193,11 +189,11 @@ const displayController = (() => {
 
   const enableCellClicks = (callback) => {
     cells.forEach((cell) => {
-      cell.addEventListener('click', callback);
+      cell.addEventListener('click', (event) => callback(event));
     });
   };
 
-  const disableCellClicks = () => {
+  const disableCellClicks = (callback) => {
     cells.forEach((cell) => {
       cell.removeEventListener('click', callback);
     });
@@ -219,17 +215,23 @@ const gameController = (() => {
   const text = document.querySelector(".who-turn-container");
   const playerOneName = document.querySelector(".player_one_name");
   const playerTwoName = document.querySelector(".player_two_name");
+  const playerOneAI = document.getElementById("player1-bot")
+  const playerTwoAI = document.getElementById("player2-bot")
   const replayBtn = document.getElementById("replay");
   const startBtn = document.getElementById("back");
 
   const startGames = () => {
     const p1name = playerOneName.value || "Player 1";
     const p2name = playerTwoName.value || "Player 2";
+
     replayBtn.style.display = "none";
     startBtn.style.display = "none";
 
-    player1 = playerFactory(p1name, 'X');
-    player2 = playerFactory(p2name, 'O');
+    const isPlayerOneAI = playerOneAI.classList.contains('active');
+    const isPlayerTwoAI = playerTwoAI.classList.contains('active');
+
+    player1 = playerFactory(p1name, 'X', isPlayerOneAI);
+    player2 = playerFactory(p2name, 'O', isPlayerTwoAI);
 
     currentPlayer = player1;
     text.innerHTML = `${currentPlayer.name} has their turn.`;
@@ -237,6 +239,41 @@ const gameController = (() => {
     gameBoard.resetBoard();
     displayController.renderBoard(gameBoard.getBoard());
     displayController.enableCellClicks(handleCellClick);
+
+    if (currentPlayer.isAI) {
+      disableClicksAndMakeAIMove();
+    } else {
+      displayController.enableCellClicks(handleCellClick);
+    }
+  };
+
+  const makeAIMove = () => {
+    if (!isGameOver && currentPlayer.isAI) {
+      const availableMoves = gameBoard.getAvailableMoves();
+      const randomIndex = Math.floor(Math.random() * availableMoves.length);
+      const selectedMove = availableMoves[randomIndex];
+
+      gameBoard.makeMove(selectedMove, currentPlayer.marker);
+      displayController.renderBoard(gameBoard.getBoard());
+
+      if (gameBoard.checkWin(currentPlayer.marker)) {
+        displayController.showWinner(currentPlayer);
+        isGameOver = true;
+      } else if (gameBoard.checkTie()) {
+        displayController.showTie();
+        isGameOver = true;
+      } else {
+        currentPlayer = currentPlayer === player1 ? player2 : player1;
+        text.innerHTML = `${currentPlayer.name} has their turn.`;
+
+        setTimeout(makeAIMove, 500);
+      }
+    }
+  };
+
+  const disableClicksAndMakeAIMove = () => {
+    displayController.disableCellClicks(handleCellClick);
+    setTimeout(makeAIMove, 500);
   };
 
   const handleCellClick = (event) => {
@@ -255,6 +292,11 @@ const gameController = (() => {
         } else {
           currentPlayer = currentPlayer === player1 ? player2 : player1;
           text.innerHTML = `${currentPlayer.name} has their turn.`;
+          if (currentPlayer.isAI) {
+            disableClicksAndMakeAIMove();
+          } else {
+            displayController.enableCellClicks(handleCellClick);
+          }
         }
       }
     }
