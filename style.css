@@ -203,3 +203,30 @@ body {
 .tic-tac-tile:active {
     transform: scale(0.98);
 }
+
+.retry_button_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 4rem;
+}
+
+.retry_button_container button {
+    font-size: 1.5rem;
+    border-radius: 5px;
+    padding: 1rem;
+    cursor: pointer;
+    display: none;
+}
+
+.retry_button_container button:hover {
+    transform: scale(1.05);
+}
+
+.retry_button_container button:active {
+    transform: scale(0.95);
+}
+
+#back {
+    margin-left: 2rem;
+}

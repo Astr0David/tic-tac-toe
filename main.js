@@ -76,7 +76,6 @@ const initialisePlayers = (() => {
   });
 })();
 
-
 const startGame = (() => {
   const gameContainer = document.querySelector(".game_container");
   const startContainer = document.querySelector(".start_container");
@@ -154,6 +153,10 @@ const playerFactory = (name, marker) => {
 
 const displayController = (() => {
   const cells = document.querySelectorAll('.tic-tac-tile');
+  const replayBtn = document.getElementById("replay");
+  const startBtn = document.getElementById("back");
+  const start = document.querySelector(".start_container")
+  const gameContainer = document.querySelector(".game_container")
 
   const renderBoard = (board) => {
     cells.forEach((cell, index) => {
@@ -161,14 +164,31 @@ const displayController = (() => {
     });
   };
 
+  function replayGame() {
+    gameController.startGames()
+  }
+
+  function startGameAgain() {
+    start.style.display = "flex";
+    gameContainer.style.display = "none"
+  }
+
   const showWinner = (winner) => {
     const text = document.querySelector(".who-turn-container");
     text.innerHTML = `${winner.name} has Won!`;
+    replayBtn.style.display = "block";
+    startBtn.style.display = "block";
+    replayBtn.addEventListener("click", replayGame)
+    startBtn.addEventListener("click", startGameAgain);
   };
 
   const showTie = () => {
     const text = document.querySelector(".who-turn-container");
     text.innerHTML = "It's a Tie.";
+    replayBtn.style.display = "block";
+    startBtn.style.display = "block";
+    replayBtn.addEventListener("click", replayGame);
+    startBtn.addEventListener("click", startGameAgain);
   };
 
   const enableCellClicks = (callback) => {
@@ -199,10 +219,14 @@ const gameController = (() => {
   const text = document.querySelector(".who-turn-container");
   const playerOneName = document.querySelector(".player_one_name");
   const playerTwoName = document.querySelector(".player_two_name");
+  const replayBtn = document.getElementById("replay");
+  const startBtn = document.getElementById("back");
 
   const startGames = () => {
     const p1name = playerOneName.value || "Player 1";
     const p2name = playerTwoName.value || "Player 2";
+    replayBtn.style.display = "none";
+    startBtn.style.display = "none";
 
     player1 = playerFactory(p1name, 'X');
     player2 = playerFactory(p2name, 'O');
