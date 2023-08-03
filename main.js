@@ -1,4 +1,4 @@
-function initialisePlayers() {
+const initialisePlayers = (() => {
   const playerOneBtns = document.querySelectorAll('.player-one-btn');
   const playerTwoBtns = document.querySelectorAll('.player-two-btn');
   const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
@@ -22,36 +22,36 @@ function initialisePlayers() {
     "player2": skillDropdownTwo,
   };
 
-  let playerTypes = {
+  const playerTypes = {
     "player1": null,
     "player2": null,
   };
 
-  function checkStartButton() {
+  const checkStartButton = () => {
     startBtn.style.display = Object.values(playerTypes).every((type) => type !== null) ? "block" : "none";
-  }
+  };
 
-  function toggleActiveClass(playerBtns, targetBtn) {
+  const toggleActiveClass = (playerBtns, targetBtn) => {
     playerBtns.forEach((btn) => {
       btn.classList.toggle('active', btn === targetBtn);
     });
-  }
+  };
 
-  function botDropdown(playerNumber, playerType) {
+  const botDropdown = (playerNumber, playerType) => {
     const targetElement = playerElements[playerNumber];
     targetElement.style.display = playerType === "bot" ? "flex" : "none";
-  }
+  };
 
-  function updateImage(playerNumber, playerType) {
+  const updateImage = (playerNumber, playerType) => {
     const imageUrl = playerImages[playerNumber][playerType];
     const imageContainer = playerNumber === "player1" ? 0 : 1;
     const playerImage = imageContainers[imageContainer].querySelector('img');
 
     playerImage.src = imageUrl;
     playerImage.style.display = 'initial';
-  }
+  };
 
-  function handleButtonClick(event, playerBtns) {
+  const handleButtonClick = (event, playerBtns) => {
     const clickedBtn = event.target;
     if (!clickedBtn.classList.contains('active')) {
       toggleActiveClass(playerBtns, clickedBtn);
@@ -64,9 +64,9 @@ function initialisePlayers() {
       botDropdown(playerNumber, playerType);
       checkStartButton();
     }
-  }
+  };
 
-  document.addEventListener('click', function (event) {
+  document.addEventListener('click', (event) => {
     const target = event.target;
     if (target.classList.contains('player-one-btn')) {
       handleButtonClick(event, playerOneBtns);
@@ -74,13 +74,14 @@ function initialisePlayers() {
       handleButtonClick(event, playerTwoBtns);
     }
   });
-}
+})();
 
-function startGame() {
+
+const startGame = (() => {
   const gameContainer = document.querySelector(".game_container");
   const startContainer = document.querySelector(".start_container");
 
-  function displayGame() {
+  const displayGame = () => {
     startContainer.style.display = "none";
     gameContainer.style.display = "flex";
   }
@@ -89,52 +90,26 @@ function startGame() {
     const target = event.target;
     if (target.id === "start-game") {
       displayGame()
+      gameController.startGames()
     }
   });
-}
+})();
 
-function mainGame() {
-  const tiles = document.querySelectorAll(".tic-tac-tile");
-  const text = document.querySelector(".who-turn-container");
+const gameBoard = (() => {
+  const board = ["", "", "", "", "", "", "", "", ""]
 
-  const positions = new Array(9).fill(undefined);
+  const getBoard = () => board;
 
-  let gameEnded = false;
-
-  let count = 1;
-
-  updateTurnText();
-
-  function takeTurn(index) {
-    if (!gameEnded && !positions[index]) {
-      const symbol = count % 2 === 0 ? "O" : "X";
-      tiles[index].innerHTML = symbol;
-      positions[index] = symbol.toLowerCase();
-      count++;
-
-      setTimeout(() => {
-        if (!checkWinner()) {
-          checkDraw();
-        }
-      }, 0);
-
-      updateTurnText();
+  const makeMove = (index, marker) => {
+    if (board[index] === "") {
+      board[index] = marker;
+      return true;
+    } else {
+      return false;
     }
-  }
+  };
 
-  function handleClick(index) {
-    takeTurn(index);
-  }
-
-  tiles.forEach((tile, index) => tile.addEventListener("click", () => handleClick(index)));
-
-  function whichWinner(value) {
-    text.innerHTML = `Player ${value.toUpperCase()} Wins!`;
-    tiles.forEach((tile, index) => tile.removeEventListener("click", handleClick));
-    gameEnded = true;
-  }
-
-  function checkWinner() {
+  const checkWin = (marker) => {
     const winPatterns = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8],
       [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -143,33 +118,126 @@ function mainGame() {
 
     for (const pattern of winPatterns) {
       const [a, b, c] = pattern;
-      if (positions[a] === positions[b] && positions[b] === positions[c]) {
-        whichWinner(positions[a]);
-        return true;
+      if (board[a] === board[b] && board[b] === board[c]) {
+        if (board[a] === marker) {
+          return true
+        }
       }
     }
-
     return false;
-  }
+  };
 
-
-  function checkDraw() {
-    if (positions.every(pos => pos)) {
-      text.innerHTML = "It is a Tie."
-      tiles.forEach((tile, index) => tile.removeEventListener("click", handleClick));
-      gameEnded = true;
+  const checkTie = () => {
+    if (board.every(pos => pos)) {
+      return true
+    } else {
+      return false
     }
-  }
+  };
 
-  function updateTurnText() {
-    const currentPlayer = count % 2 === 0 ? "Player 2" : "Player 1";
-    text.innerHTML = `${currentPlayer} has their turn.`;
-  }
-}
+  const resetBoard = () => {
+    board.fill("");
+  };
 
+  return {
+    getBoard,
+    makeMove,
+    checkWin,
+    checkTie,
+    resetBoard,
+  };
+})();
 
-initialisePlayers();
+const playerFactory = (name, marker) => {
+  return { name, marker };
+};
 
-startGame();
+const displayController = (() => {
+  const cells = document.querySelectorAll('.tic-tac-tile');
 
-mainGame();
+  const renderBoard = (board) => {
+    cells.forEach((cell, index) => {
+      cell.textContent = board[index];
+    });
+  };
+
+  const showWinner = (winner) => {
+    const text = document.querySelector(".who-turn-container");
+    text.innerHTML = `${winner.name} has Won!`;
+  };
+
+  const showTie = () => {
+    const text = document.querySelector(".who-turn-container");
+    text.innerHTML = "It's a Tie.";
+  };
+
+  const enableCellClicks = (callback) => {
+    cells.forEach((cell) => {
+      cell.addEventListener('click', callback);
+    });
+  };
+
+  const disableCellClicks = () => {
+    cells.forEach((cell) => {
+      cell.removeEventListener('click', callback);
+    });
+  };
+
+  return {
+    renderBoard,
+    showWinner,
+    showTie,
+    enableCellClicks,
+    disableCellClicks,
+  };
+})();
+
+const gameController = (() => {
+  let currentPlayer;
+  let isGameOver = false;
+
+  const text = document.querySelector(".who-turn-container");
+  const playerOneName = document.querySelector(".player_one_name");
+  const playerTwoName = document.querySelector(".player_two_name");
+
+  const startGames = () => {
+    const p1name = playerOneName.value || "Player 1";
+    const p2name = playerTwoName.value || "Player 2";
+
+    player1 = playerFactory(p1name, 'X');
+    player2 = playerFactory(p2name, 'O');
+
+    currentPlayer = player1;
+    text.innerHTML = `${currentPlayer.name} has their turn.`;
+    isGameOver = false;
+    gameBoard.resetBoard();
+    displayController.renderBoard(gameBoard.getBoard());
+    displayController.enableCellClicks(handleCellClick);
+  };
+
+  const handleCellClick = (event) => {
+    if (!isGameOver) {
+      const cellIndex = Number(event.target.id);
+
+      if (gameBoard.makeMove(cellIndex, currentPlayer.marker)) {
+        displayController.renderBoard(gameBoard.getBoard());
+
+        if (gameBoard.checkWin(currentPlayer.marker)) {
+          displayController.showWinner(currentPlayer);
+          isGameOver = true;
+        } else if (gameBoard.checkTie()) {
+          displayController.showTie();
+          isGameOver = true;
+        } else {
+          currentPlayer = currentPlayer === player1 ? player2 : player1;
+          text.innerHTML = `${currentPlayer.name} has their turn.`;
+        }
+      }
+    }
+  };
+
+  return {
+    startGames,
+  };
+})();
+

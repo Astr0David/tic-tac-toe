@@ -21,7 +21,7 @@ body {
 
 .start_container {
     flex: 1;
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -32,6 +32,13 @@ body {
     padding-bottom: 5rem;
     font-size: 2.5rem;
     color: grey;
+}
+
+.player_one_name,
+.player_two_name {
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .players_container {
@@ -45,6 +52,10 @@ body {
 .player_two_title {
     text-align: center;
     font-size: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .player_one_image,
@@ -133,7 +144,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-top: 5rem;
+    padding-top: 4rem;
 }
 
 .start_game_button button {
@@ -153,7 +164,7 @@ body {
 }
 
 .game_container {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
