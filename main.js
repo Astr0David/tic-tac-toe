@@ -1,11 +1,26 @@
-const initializePlayers = (() => {
-    const playerOneBtns = document.querySelectorAll('.player-one-btn');
-    const playerTwoBtns = document.querySelectorAll('.player-two-btn');
-    const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
-    const skillDropdownOne = document.getElementById('aiskillchoiceone');
-    const skillDropdownTwo = document.getElementById('aiskillchoicetwo');
-    const startBtn = document.getElementById("start-game");
+const cells = document.querySelectorAll('.tic-tac-tile');
+const replayBtn = document.getElementById("replay");
+const restartBtn = document.getElementById("back");
+const start = document.querySelector(".start_container");
+const gameContainer = document.querySelector(".game_container");
+const skillOne = document.getElementById('skillselect1');
+const skilltwo = document.getElementById('askillselect2');
+const text = document.querySelector(".who-turn-container");
+const playerOneBtns = document.querySelectorAll('.player-one-btn');
+const playerTwoBtns = document.querySelectorAll('.player-two-btn');
+const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
+const skillDropdownOne = document.getElementById('aiskillchoiceone');
+const skillDropdownTwo = document.getElementById('aiskillchoicetwo');
+const startBtn = document.getElementById("start-game");
+const startContainer = document.querySelector(".start_container");
+const playerOneName = document.querySelector(".player_one_name");
+const playerTwoName = document.querySelector(".player_two_name");
+const playerOneAI = document.getElementById("player1-bot");
+const playerTwoAI = document.getElementById("player2-bot");
+const skillSelect1 = document.getElementById("skillselect1");
+const skillSelect2 = document.getElementById("skillselect2");
 
+const initializePlayers = (() => {
     const playerImages = {
         'player1': { human: 'player1.jpg', bot: 'botprofile1.png' },
         'player2': { human: 'player2.jpg', bot: 'botprofile2.png' }
@@ -60,9 +75,6 @@ const initializePlayers = (() => {
 })();
 
 const startGame = (() => {
-    const gameContainer = document.querySelector(".game_container");
-    const startContainer = document.querySelector(".start_container");
-
     const displayGame = () => {
         startContainer.style.display = "none";
         gameContainer.style.display = "flex";
@@ -123,15 +135,6 @@ const gameBoard = (() => {
 const playerFactory = (name, marker, isAI, isImpossible) => ({ name, marker, isAI, isImpossible });
 
 const displayController = (() => {
-    const cells = document.querySelectorAll('.tic-tac-tile');
-    const replayBtn = document.getElementById("replay");
-    const startBtn = document.getElementById("back");
-    const start = document.querySelector(".start_container");
-    const gameContainer = document.querySelector(".game_container");
-    const skillDropdownOne = document.getElementById('skillselect1');
-    const skillDropdownTwo = document.getElementById('askillselect2');
-    const text = document.querySelector(".who-turn-container");
-
     const renderBoard = (board) => cells.forEach((cell, index) => cell.textContent = board[index]);
 
     const replayGame = () => gameController.startGames();
@@ -139,26 +142,27 @@ const displayController = (() => {
     const startGameAgain = () => {
         start.style.display = "flex";
         gameContainer.style.display = "none";
-        skillDropdownOne.selectedIndex = 0;
-        skillDropdownTwo.selectedIndex = 0;
-        startBtn.style.display = "none";
+        skillOne.selectedIndex = 0;
+        skilltwo.selectedIndex = 0;
+        restartBtn.style.display = "none";
+        replayBtn.style.display = "none";
     };
 
     const showWinner = (winner) => {
         text.textContent = `${winner.name} has Won!`;
         replayBtn.style.display = "block";
-        startBtn.style.display = "block";
+        restartBtn.style.display = "block";
         replayBtn.addEventListener("click", replayGame);
-        startBtn.addEventListener("click", startGameAgain);
+        restartBtn.addEventListener("click", startGameAgain);
     };
 
     const showTie = () => {
         const text = document.querySelector(".who-turn-container");
         text.textContent = "It's a Tie.";
         replayBtn.style.display = "block";
-        startBtn.style.display = "block";
+        restartBtn.style.display = "block";
         replayBtn.addEventListener("click", replayGame);
-        startBtn.addEventListener("click", startGameAgain);
+        restartBtn.addEventListener("click", startGameAgain);
     };
 
     const enableCellClicks = (callback) => cells.forEach(cell => cell.addEventListener('click', callback));
@@ -173,16 +177,6 @@ const gameController = (() => {
     let isGameOver = false;
     let player1
     let player2
-
-    const text = document.querySelector(".who-turn-container");
-    const playerOneName = document.querySelector(".player_one_name");
-    const playerTwoName = document.querySelector(".player_two_name");
-    const playerOneAI = document.getElementById("player1-bot");
-    const playerTwoAI = document.getElementById("player2-bot");
-    const replayBtn = document.getElementById("replay");
-    const startBtn = document.getElementById("back");
-    const skillSelect1 = document.getElementById("skillselect1");
-    const skillSelect2 = document.getElementById("skillselect2");
 
     const updateAIPlayers = (p1name, p2name) => {
         const isPlayerOneAI = playerOneAI.classList.contains('active');
@@ -203,7 +197,7 @@ const gameController = (() => {
         const p2name = playerTwoName.value || "Player 2";
 
         replayBtn.style.display = "none";
-        startBtn.style.display = "none";
+        restartBtn.style.display = "none";
 
         updateAIPlayers(p1name, p2name);
 
