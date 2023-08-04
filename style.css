@@ -123,23 +123,6 @@ body {
     border: 3px solid black;
 }
 
-.ai_skill_choice_one,
-.ai_skill_choice_two {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding-top: 1.5rem;
-}
-
-.ai_skill_choice_one select,
-.ai_skill_choice_two select {
-    width: 50%;
-    border-radius: 5px;
-    text-transform: capitalize;
-    padding: 0.5rem;
-    font-size: 1rem;
-}
-
 .start_game_button {
     display: flex;
     align-items: center;

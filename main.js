@@ -3,14 +3,10 @@ const replayBtn = document.getElementById("replay");
 const restartBtn = document.getElementById("back");
 const start = document.querySelector(".start_container");
 const gameContainer = document.querySelector(".game_container");
-const skillOne = document.getElementById('skillselect1');
-const skilltwo = document.getElementById('askillselect2');
 const text = document.querySelector(".who-turn-container");
 const playerOneBtns = document.querySelectorAll('.player-one-btn');
 const playerTwoBtns = document.querySelectorAll('.player-two-btn');
 const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
-const skillDropdownOne = document.getElementById('aiskillchoiceone');
-const skillDropdownTwo = document.getElementById('aiskillchoicetwo');
 const startBtn = document.getElementById("start-game");
 const startContainer = document.querySelector(".start_container");
 const playerOneName = document.querySelector(".player_one_name");
@@ -26,7 +22,6 @@ const initializePlayers = (() => {
         'player2': { human: 'player2.jpg', bot: 'botprofile2.png' }
     };
 
-    const playerElements = { "player1": skillDropdownOne, "player2": skillDropdownTwo };
     const playerTypes = { "player1": null, "player2": null };
 
     const checkStartButton = () => {
@@ -35,10 +30,6 @@ const initializePlayers = (() => {
 
     const toggleActiveClass = (playerBtns, targetBtn) => {
         playerBtns.forEach(btn => btn.classList.toggle('active', btn === targetBtn));
-    };
-
-    const botDropdown = (playerNumber, playerType) => {
-        playerElements[playerNumber].style.display = playerType === "bot" ? "flex" : "none";
     };
 
     const updateImage = (playerNumber, playerType) => {
@@ -59,7 +50,6 @@ const initializePlayers = (() => {
             playerTypes[playerNumber] = playerType;
 
             updateImage(playerNumber, playerType);
-            botDropdown(playerNumber, playerType);
             checkStartButton();
         }
     };
@@ -132,7 +122,7 @@ const gameBoard = (() => {
     return { makeMove, getBoard, resetBoard, checkWin, checkTie, getAvailableMoves };
 })();
 
-const playerFactory = (name, marker, isAI, isImpossible) => ({ name, marker, isAI, isImpossible });
+const playerFactory = (name, marker, isAI) => ({ name, marker, isAI });
 
 const displayController = (() => {
     const renderBoard = (board) => cells.forEach((cell, index) => cell.textContent = board[index]);
@@ -142,8 +132,6 @@ const displayController = (() => {
     const startGameAgain = () => {
         start.style.display = "flex";
         gameContainer.style.display = "none";
-        skillOne.selectedIndex = 0;
-        skilltwo.selectedIndex = 0;
         restartBtn.style.display = "none";
         replayBtn.style.display = "none";
     };
@@ -182,14 +170,8 @@ const gameController = (() => {
         const isPlayerOneAI = playerOneAI.classList.contains('active');
         const isPlayerTwoAI = playerTwoAI.classList.contains('active');
 
-        const aiSkill1 = skillSelect1.value;
-        const aiSkill2 = skillSelect2.value;
-
-        const isAiImpossible = aiSkill1 === 'impossible';
-        const IsAiImpossible = aiSkill2 === 'impossible';
-
-        player1 = isAiImpossible ? playerFactory(p1name, "X", true, true) : (isPlayerOneAI ? playerFactory(p1name, 'X', true, false) : playerFactory(p1name, 'X', false, false));
-        player2 = IsAiImpossible ? playerFactory(p2name, "O", true, true) : (isPlayerTwoAI ? playerFactory(p2name, 'O', true, false) : playerFactory(p2name, 'O', false, false));
+        player1 = isPlayerOneAI ? playerFactory(p1name, 'X', true) : playerFactory(p1name, 'X', false);
+        player2 = isPlayerTwoAI ? playerFactory(p2name, 'O', true) : playerFactory(p2name, 'O', false);
     };
 
     const startGames = () => {
@@ -219,111 +201,30 @@ const gameController = (() => {
         }
     };
 
-    const minimax = (newBoard, player) => {
-        const oppositePlayer = currentPlayer.marker === "X" ? "O" : "X";
-        let availableSpots = gameBoard.getAvailableMoves()
-
-        if (gameBoard.checkWin(newBoard, player)) {
-            return { score: -10 }
-        } else if (gameBoard.checkWin(newBoard, currentPlayer.marker)) {
-            return { score: 20 }
-        } else if (availableSpots.length === 0) {
-            return { score: 0 }
-        }
-
-        let moves = [];
-
-        for (let i = 0; i < availableSpots.length; i++) {
-            let move = {};
-
-            move.index = newBoard[availableSpots[i]];
-            newBoard[availableSpots[i]] = player;
-
-            if (player == currentPlayer.marker) {
-                let result = minimax(newBoard, oppositePlayer);
-                move.score = result.score;
-            } else {
-                let result = minimax(newBoard, currentPlayer.marker);
-                move.score = result.score;
-            }
-
-            newBoard[availableSpots[i]] = move.index;
-
-            moves.push(move);
-        }
-
-        let bestMove;
-
-        if (player == currentPlayer.marker) {
-            let bestScore = -Infinity;
-            for (let i = 0; i < moves.length; i++) {
-                if (moves[i].score > bestScore) {
-                    bestScore = moves[i].score;
-                    bestMove = i;
-                }
-            }
-        } else {
-            let bestScore = Infinity;
-            for (let i = 0; i < moves.length; i++) {
-                if (moves[i].score < bestScore) {
-                    bestScore = moves[i].score;
-                    bestMove = i;
-                }
-            }
-        }
-        return moves[bestMove];
-    };
-
-    const bestMove = (board, player) => {
-        return minimax(board, player).index
-    };
-
     const makeAIMove = () => {
         if (!isGameOver && currentPlayer.isAI) {
-            if (!isGameOver && !currentPlayer.isImpossible) {
-                const availableMoves = gameBoard.getAvailableMoves();
-                const randomIndex = Math.floor(Math.random() * availableMoves.length);
-                const selectedMove = availableMoves[randomIndex];
+            const availableMoves = gameBoard.getAvailableMoves();
+            const randomIndex = Math.floor(Math.random() * availableMoves.length);
+            const selectedMove = availableMoves[randomIndex];
 
-                gameBoard.makeMove(selectedMove, currentPlayer.marker);
-                displayController.renderBoard(gameBoard.getBoard());
+            gameBoard.makeMove(selectedMove, currentPlayer.marker);
 
-                if (gameBoard.checkWin(gameBoard.getBoard(), currentPlayer.marker)) {
-                    displayController.showWinner(currentPlayer);
-                    isGameOver = true;
-                } else if (gameBoard.checkTie()) {
-                    displayController.showTie();
-                    isGameOver = true;
+            displayController.renderBoard(gameBoard.getBoard());
+
+            if (gameBoard.checkWin(gameBoard.getBoard(), currentPlayer.marker)) {
+                displayController.showWinner(currentPlayer);
+                isGameOver = true;
+            } else if (gameBoard.checkTie()) {
+                displayController.showTie();
+                isGameOver = true;
+            } else {
+                currentPlayer = currentPlayer === player1 ? player2 : player1;
+                text.textContent = `${currentPlayer.name} has their turn.`;
+
+                if (currentPlayer.isAI) {
+                    setTimeout(makeAIMove, 500);
                 } else {
-                    currentPlayer = currentPlayer === player1 ? player2 : player1;
-                    text.textContent = `${currentPlayer.name} has their turn.`;
-
-                    if (currentPlayer.isAI) {
-                        setTimeout(makeAIMove, 500);
-                    } else {
-                        displayController.enableCellClicks(handleCellClick);
-                    }
-                }
-            } else if (!isGameOver && currentPlayer.isImpossible) {
-                let impossibleMove = bestMove(gameBoard.getBoard(), currentPlayer.marker);
-                gameBoard.makeMove(impossibleMove, currentPlayer.marker);
-                displayController.renderBoard(gameBoard.getBoard());
-
-                if (gameBoard.checkWin(gameBoard.getBoard(), currentPlayer.marker)) {
-                    displayController.showWinner(currentPlayer);
-                    isGameOver = true;
-                } else if (gameBoard.checkTie()) {
-                    displayController.showTie();
-                    isGameOver = true;
-                } else {
-                    currentPlayer = currentPlayer === player1 ? player2 : player1;
-                    text.textContent = `${currentPlayer.name} has their turn.`;
-
-                    if (currentPlayer.isAI) {
-                        setTimeout(makeAIMove, 500);
-                    } else {
-                        displayController.enableCellClicks(handleCellClick);
-                    }
+                    displayController.enableCellClicks(handleCellClick);
                 }
             }
         }
