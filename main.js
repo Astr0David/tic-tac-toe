@@ -281,7 +281,6 @@ const gameController = (() => {
             displayController.disableCellClicks(handleCellClick);
             if (currentPlayer.isImpossible) {
                 let impossibleMove = minimax(gameBoard.getBoard(), currentPlayer.marker).index;
-                console.log(impossibleMove)
                 gameBoard.makeMove(impossibleMove, currentPlayer.marker);
             } else {
                 const availableMoves = gameBoard.getAvailableMoves();
