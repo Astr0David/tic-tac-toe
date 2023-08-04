@@ -7,6 +7,8 @@ const text = document.querySelector(".who-turn-container");
 const playerOneBtns = document.querySelectorAll('.player-one-btn');
 const playerTwoBtns = document.querySelectorAll('.player-two-btn');
 const imageContainers = document.querySelectorAll('.player_one_image, .player_two_image');
+const skillDropdownOne = document.getElementById('aiskillchoiceone');
+const skillDropdownTwo = document.getElementById('aiskillchoicetwo');
 const startBtn = document.getElementById("start-game");
 const startContainer = document.querySelector(".start_container");
 const playerOneName = document.querySelector(".player_one_name");
@@ -22,6 +24,7 @@ const initializePlayers = (() => {
         'player2': { human: 'player2.jpg', bot: 'botprofile2.png' }
     };
 
+    const playerElements = { "player1": skillDropdownOne, "player2": skillDropdownTwo };
     const playerTypes = { "player1": null, "player2": null };
 
     const checkStartButton = () => {
@@ -30,6 +33,10 @@ const initializePlayers = (() => {
 
     const toggleActiveClass = (playerBtns, targetBtn) => {
         playerBtns.forEach(btn => btn.classList.toggle('active', btn === targetBtn));
+    };
+
+    const botDropdown = (playerNumber, playerType) => {
+        playerElements[playerNumber].style.display = playerType === "bot" ? "flex" : "none";
     };
 
     const updateImage = (playerNumber, playerType) => {
@@ -50,6 +57,7 @@ const initializePlayers = (() => {
             playerTypes[playerNumber] = playerType;
 
             updateImage(playerNumber, playerType);
+            botDropdown(playerNumber, playerType);
             checkStartButton();
         }
     };
@@ -122,7 +130,7 @@ const gameBoard = (() => {
     return { makeMove, getBoard, resetBoard, checkWin, checkTie, getAvailableMoves };
 })();
 
-const playerFactory = (name, marker, isAI) => ({ name, marker, isAI });
+const playerFactory = (name, marker, isAI, isImpossible) => ({ name, marker, isAI, isImpossible });
 
 const displayController = (() => {
     const renderBoard = (board) => cells.forEach((cell, index) => cell.textContent = board[index]);
@@ -170,8 +178,14 @@ const gameController = (() => {
         const isPlayerOneAI = playerOneAI.classList.contains('active');
         const isPlayerTwoAI = playerTwoAI.classList.contains('active');
 
-        player1 = isPlayerOneAI ? playerFactory(p1name, 'X', true) : playerFactory(p1name, 'X', false);
-        player2 = isPlayerTwoAI ? playerFactory(p2name, 'O', true) : playerFactory(p2name, 'O', false);
+        const aiSkill1 = skillSelect1.value;
+        const aiSkill2 = skillSelect2.value;
+
+        const isAiImpossible = aiSkill1 === 'impossible';
+        const IsAiImpossible2 = aiSkill2 === 'impossible';
+
+        player1 = isAiImpossible ? playerFactory(p1name, "X", true, true) : (isPlayerOneAI ? playerFactory(p1name, 'X', true, false) : playerFactory(p1name, 'X', false, false));
+        player2 = IsAiImpossible2 ? playerFactory(p2name, "O", true, true) : (isPlayerTwoAI ? playerFactory(p2name, 'O', true, false) : playerFactory(p2name, 'O', false, false));
     };
 
     const startGames = () => {
@@ -201,13 +215,80 @@ const gameController = (() => {
         }
     };
 
+    const minimax = (newBoard, player) => {
+        const oppositePlayer = currentPlayer.marker === "X" ? "O" : "X";
+
+        if (gameBoard.checkWin(newBoard, oppositePlayer)) {
+            return { score: -10 };
+        } else if (gameBoard.checkWin(newBoard, currentPlayer.marker)) {
+            return { score: 10 };
+        } else if (gameBoard.checkTie(newBoard)) {
+            return { score: 0 };
+        }
+
+        let moves = [];
+        let availableSpots = [];
+
+        newBoard.forEach((data, index) => {
+            if (data === "") {
+                availableSpots.push(index);
+            }
+        });
+
+        for (let i = 0; i < availableSpots.length; i++) {
+            let move = {};
+            move.index = availableSpots[i];
+
+            newBoard[availableSpots[i]] = player;
+
+            if (player == currentPlayer.marker) {
+                let result = minimax(newBoard, oppositePlayer);
+                move.score = result.score;
+            } else {
+                let result = minimax(newBoard, currentPlayer.marker);
+                move.score = result.score;
+            }
+
+            newBoard[availableSpots[i]] = "";
+
+            moves.push(move);
+        }
+
+        let bestMove;
+        if (player == currentPlayer.marker) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < moves.length; i++) {
+                if (moves[i].score > bestScore) {
+                    bestScore = moves[i].score;
+                    bestMove = i;
+                }
+            }
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < moves.length; i++) {
+                if (moves[i].score < bestScore) {
+                    bestScore = moves[i].score;
+                    bestMove = i;
+                }
+            }
+        }
+        return moves[bestMove];
+    };
+
+
     const makeAIMove = () => {
         if (!isGameOver && currentPlayer.isAI) {
-            const availableMoves = gameBoard.getAvailableMoves();
-            const randomIndex = Math.floor(Math.random() * availableMoves.length);
-            const selectedMove = availableMoves[randomIndex];
-
-            gameBoard.makeMove(selectedMove, currentPlayer.marker);
+            displayController.disableCellClicks(handleCellClick);
+            if (currentPlayer.isImpossible) {
+                let impossibleMove = minimax(gameBoard.getBoard(), currentPlayer.marker).index;
+                console.log(impossibleMove)
+                gameBoard.makeMove(impossibleMove, currentPlayer.marker);
+            } else {
+                const availableMoves = gameBoard.getAvailableMoves();
+                const randomIndex = Math.floor(Math.random() * availableMoves.length);
+                const selectedMove = availableMoves[randomIndex];
+                gameBoard.makeMove(selectedMove, currentPlayer.marker);
+            }
 
             displayController.renderBoard(gameBoard.getBoard());
 
@@ -233,7 +314,6 @@ const gameController = (() => {
     const handleCellClick = (event) => {
         if (!isGameOver && !currentPlayer.isAI) {
             const cellIndex = Number(event.target.id);
-
             if (gameBoard.makeMove(cellIndex, currentPlayer.marker)) {
                 displayController.renderBoard(gameBoard.getBoard());
 
