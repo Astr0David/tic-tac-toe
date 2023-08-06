@@ -184,8 +184,8 @@ const gameController = (() => {
         const isAiImpossible = aiSkill1 === 'impossible';
         const IsAiImpossible2 = aiSkill2 === 'impossible';
 
-        player1 = isAiImpossible ? playerFactory(p1name, "X", true, true) : (isPlayerOneAI ? playerFactory(p1name, 'X', true, false) : playerFactory(p1name, 'X', false, false));
-        player2 = IsAiImpossible2 ? playerFactory(p2name, "O", true, true) : (isPlayerTwoAI ? playerFactory(p2name, 'O', true, false) : playerFactory(p2name, 'O', false, false));
+        player1 = isPlayerOneAI && isAiImpossible ? playerFactory(p1name, "X", true, true) : (isPlayerOneAI ? playerFactory(p1name, 'X', true, false) : playerFactory(p1name, 'X', false, false));
+        player2 = isPlayerTwoAI && IsAiImpossible2 ? playerFactory(p2name, "O", true, true) : (isPlayerTwoAI ? playerFactory(p2name, 'O', true, false) : playerFactory(p2name, 'O', false, false));
     };
 
     const startGames = () => {
